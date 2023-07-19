@@ -1,26 +1,21 @@
 package abstractpages;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import pages.optimove.MainPage;
 
-import java.util.ArrayList;
-
-abstract public class BaseTest<T extends BaseTest> {
+abstract public class BaseTest {
 
     protected WebDriver driver;
 
-
-    //type name of the browser you're using in this variable (chrome or firefox)
+    //type name of the browser you're using in this variable (chrome, firefox or edge)
     private static final String BROWSER_NAME = "chrome";
     //put false here if you want to see browser or true to headless mode
     private final boolean headless = false;
@@ -31,6 +26,7 @@ abstract public class BaseTest<T extends BaseTest> {
             case ("chrome") -> {
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.setHeadless(headless);
+                chromeOptions.addArguments("--remote-allow-origins=*");
                 WebDriverManager.chromedriver().setup();
                 driver = new ChromeDriver(chromeOptions);
                 if (!headless) {
@@ -47,9 +43,24 @@ abstract public class BaseTest<T extends BaseTest> {
                     driver.manage().window().maximize();
                 }
             }
+            case ("edge") -> {
+                EdgeOptions edgeOptions = new EdgeOptions();
+                edgeOptions.setHeadless(headless);
+                WebDriverManager.edgedriver().setup();
+                driver = new EdgeDriver(edgeOptions);
+                driver.manage().window().maximize();
+                if (!headless) {
+                    driver.manage().window().maximize();
+                }
+            }
             default -> throw new Exception("You chose not valid browser!");
         }
     }
+
+    public WebDriver getDriver() {
+        return driver;
+    }
+
     public void sleep(int seconds) {
         try {
             Thread.sleep(seconds * 1000L);
@@ -58,43 +69,8 @@ abstract public class BaseTest<T extends BaseTest> {
         }
     }
 
-    public T scroll(int pixels) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollBy(0," + pixels + ")", "");
-        return (T) this;
-    }
-
-    public void switchToTab(int tabNumber) {
-        ArrayList<String> tab = new ArrayList<>(driver.getWindowHandles());
-        driver.switchTo().window(tab.get(tabNumber - 1));
-    }
-
-    public void goBack() {
-        driver.navigate().back();
-    }
-
-    public void switchToNextTab() {
-        driver.getWindowHandles().forEach(tab -> driver.switchTo().window(tab));
-    }
-
     @AfterMethod
     public void closeWindow() {
         driver.quit();
-    }
-
-    public WebDriver getDriver() {
-        return driver;
-    }
-
-    public void openPage(String url) {
-        driver.get(url);
-    }
-
-    public String getURL() {
-        return driver.getCurrentUrl();
-    }
-
-    public boolean urlContains(String urlPath) {
-        return driver.getCurrentUrl().contains(urlPath);
     }
 }

@@ -1,24 +1,29 @@
 package tests;
 
 import abstractpages.BaseTest;
-import org.testng.annotations.Test;
+import jdk.jfr.Description;
+import pages.optimove.Career;
 import pages.optimove.MainPage;
+
+import org.testng.annotations.Test;
 
 public class QaVacancyCheck extends BaseTest {
 
     @Test
+    @Description("test for job cart filtering")
     public void check(){
         MainPage mainPage = new MainPage(driver);
+        Career career = new Career(driver);
 
-        mainPage.openOptimove()
-
-//                .closePopUpHelper()
-//                .closeCockieWindow()
-                .moveToCompanyBtn()
-                .clickCareerBtn()
-                .scrollPageToTheAllBtn()
+        mainPage
+                .openSiteOptimove()
+                .moveToTheCompanyBtn()
+                .clickTheCareerBtn()
+                .closeHelperPopup()
+                .closeCoockieMessage()
                 .clickTheAllBtn()
-                .clickTheUkrBtn();
-
+                .selectUkrfronDropDown();
+        career
+                .asserions();
     }
 }
