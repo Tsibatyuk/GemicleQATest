@@ -11,7 +11,7 @@ public class QaVacancyCheck extends BaseTest {
 
     @Test
     @Description("test for job cart filtering")
-    public void check(){
+    public void checkTheVacancyCards(){
         MainPage mainPage = new MainPage(driver);
         Career career = new Career(driver);
 
